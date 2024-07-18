@@ -13,7 +13,12 @@ struct ContentView: View {
     @State private var correctAnswer = Int.random(in: 0...2)
     
     @State private var showingScore = false
+    @State private var showingGameOver = false
     @State private var scoreTitle = ""
+    @State private var userScore = 0
+    @State private var tries = 0
+    @State private var questionsAsked = 0
+    @State private var totalQuestions = 8
     
     var body: some View {
         ZStack{
@@ -57,7 +62,10 @@ struct ContentView: View {
                 Spacer()
                 Spacer()
                 
-                Text("Score ???")
+                Text("Score \(userScore)")
+                    .foregroundStyle(.white)
+                    .font(.title.bold())
+                Text("Try: \(tries)")
                     .foregroundStyle(.white)
                     .font(.title.bold())
                 
@@ -65,27 +73,52 @@ struct ContentView: View {
             }
             .padding()
         }
-        .alert(scoreTitle, isPresented: $showingScore){
-            Button("Continue", action: askQuestion)
-        } message: {
-            Text("Your score is ???")
-        }
+        
+            .alert(scoreTitle, isPresented: $showingScore){
+                Button("Continue", action: askQuestion)
+            } message: {
+                Text("Your score is \(userScore)")
+            }
+        
+            .alert("Game Over", isPresented: $showingGameOver){
+                Button("Restart", action: resetGame)
+            } message: {
+                Text("Your final score is \(userScore)")
+            }
+        
     }
     
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct!"
+            userScore += 1
         } else {
-            scoreTitle = "Wrong.."
+            scoreTitle = "Wrong.. That's the flag of \(countries[number])"
+            if userScore > 0 {
+                userScore -= 1
+            }
+        }
+        tries += 1
+        
+        if tries == totalQuestions {
+            showingGameOver = true
+        } else {
+            showingScore = true
         }
         
-        showingScore = true
     }
     
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
     }
+    
+    func resetGame(){
+        userScore = 0
+        tries = 0
+        askQuestion()
+    }
+        
 }
 
 #Preview {
