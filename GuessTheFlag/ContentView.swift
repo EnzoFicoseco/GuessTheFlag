@@ -3,9 +3,34 @@
 //  GuessTheFlag
 //
 //  Created by Enzo Ficoseco on 16/07/2024.
-//
+// Project 2
 
 import SwiftUI
+
+struct Title: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.largeTitle)
+            .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+    }
+}
+
+extension View {
+    func titleStyle() -> some View {
+        modifier(Title())
+    }
+}
+//////////////////////////////////////
+struct FlagImage: View {
+    var imageName : String
+    
+    
+    var body: some View {
+        Image(imageName)
+            .clipShape(.buttonBorder)
+            .shadow(radius: 5)
+    }
+}
 
 struct ContentView: View {
     
@@ -20,6 +45,11 @@ struct ContentView: View {
     @State private var questionsAsked = 0
     @State private var totalQuestions = 8
     
+    
+    
+    
+    
+    
     var body: some View {
         ZStack{
             RadialGradient(stops: [
@@ -32,8 +62,8 @@ struct ContentView: View {
                 
                 Spacer()
                 Text("Guess the Flag")
-                    .font(.largeTitle.bold())
-                    .foregroundStyle(.white)
+                    .foregroundColor(.white)
+                    .titleStyle()
                 VStack(spacing: 15){
                     VStack{
                         Text("Tap the flag of")
@@ -41,16 +71,14 @@ struct ContentView: View {
                             .font(.subheadline.weight(.heavy))
                         
                         Text(countries[correctAnswer])
-                            .font(.largeTitle.weight(.semibold))
+                            .titleStyle()
                     }
                     
                     ForEach(0..<3) { number in
                         Button{
                             flagTapped(number)
                         } label: {
-                            Image(countries[number])
-                                .clipShape(.buttonBorder)
-                                .shadow(radius: 5)
+                            FlagImage(imageName: countries[number])
                         }
                     }
                 }
