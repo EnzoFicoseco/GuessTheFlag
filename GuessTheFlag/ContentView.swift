@@ -45,16 +45,18 @@ struct ContentView: View {
     @State private var questionsAsked = 0
     @State private var totalQuestions = 8
     
-    
-    
+    //Animations vars
+    @State private var animationAmounts = [Double](repeating: 0.0, count: 3)
+    @State private var buttonOpacities = [Double](repeating: 1.0, count: 3)
+    @State private var buttonScaledDown = [Double](repeating: 1.0, count: 3)
     
     
     
     var body: some View {
         ZStack{
             RadialGradient(stops: [
-                .init(color: Color(red: 0.1, green: 0.2, blue: 0.35), location: 0.3),
-                .init(color: Color(red: 0.76, green: 0.15, blue: 0.26), location: 0.3)
+                .init(color: Color(red: 0.1, green: 0.0, blue: 0.40), location: 0.3),
+                .init(color: Color(red: 0.96, green: 0.15, blue: 0.26), location: 0.3)
             ], center: .top, startRadius: 200, endRadius: 700)
             .ignoresSafeArea()
             
@@ -77,9 +79,20 @@ struct ContentView: View {
                     ForEach(0..<3) { number in
                         Button{
                             flagTapped(number)
+                            withAnimation {
+                                animationAmounts[number] += 360
+                                for i in 0..<3 {
+                                    if i != number {
+                                        buttonOpacities[i] = 0.25
+                                        buttonScaledDown[i] = 0.75
+                                    }
+                                }
+                            }
                         } label: {
                             FlagImage(imageName: countries[number])
-                        }
+                        }.rotation3DEffect(.degrees(animationAmounts[number]), axis: (x: 0, y: 1, z: 0))
+                            .opacity(buttonOpacities[number])
+                            .scaleEffect(buttonScaledDown[number])
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -139,6 +152,9 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        animationAmounts = [Double](repeating: 0.0, count: 3)
+        buttonOpacities = [Double](repeating: 1.0, count: 3)
+        buttonScaledDown = [Double](repeating: 1.0, count: 3)
     }
     
     func resetGame(){
